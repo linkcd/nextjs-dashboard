@@ -46,7 +46,8 @@ export default function Page() {
             // - "block" makes the element visible and displayed as a block element
             // - "md:hidden" hides the element on medium-sized screens and larger (breakpoint >= 768px)
             // This combination means the element will only be visible on mobile screens (< 768px)
-            className="block md:hidden" />
+            className="block md:hidden"
+            alt="Screenshots of the dashboard project showing mobile version" />
         </div>
       </div>
     </main>
