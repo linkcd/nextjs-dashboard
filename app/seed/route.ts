@@ -1,4 +1,5 @@
-import bcrypt from 'bcrypt';
+// Using crypto instead of bcrypt to avoid native module compilation issues
+import { scrypt, randomBytes } from 'crypto';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
@@ -17,7 +18,15 @@ async function seedUsers() {
 
   const insertedUsers = await Promise.all(
     users.map(async (user) => {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
+      // Using scrypt instead of bcrypt
+      const salt = randomBytes(16).toString('hex');
+      const hashedPassword = await new Promise<string>((resolve, reject) => {
+        scrypt(user.password, salt, 64, (err, derivedKey) => {
+          if (err) reject(err);
+          resolve(salt + ':' + derivedKey.toString('hex'));
+        });
+      });
+      
       return sql`
         INSERT INTO users (id, name, email, password)
         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
